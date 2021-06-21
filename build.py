@@ -6,8 +6,6 @@ def dictionaries_to_dataframe():
     def install(package):
         subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
-    subprocess.run(["wget", "--no-check-certificate", url])
-
     install('pandas')
 
     import pandas as pd
@@ -16,7 +14,7 @@ def dictionaries_to_dataframe():
     with zipfile.ZipFile('Multi-Dictionaries-2016.zip') as zip:
         zip.extractall()
 
-    dicts = open('All_Dictionaries_report_2016.tab', 'r').readlines()
+    dicts = open('Multi-Dictionaries-2016.tab', 'r').readlines()
 
     # read the dictionary in to dataframe
     l = []

@@ -1,7 +1,5 @@
 def dictionaries_to_dataframe():
 
-    url = 'https://www.buddism.ru///___DHARMA___/__DICTIONARIES/?zip=ALL_DICTIONARIES_IN_ONE_DATABASE_FILE.zip&zip_download=ALL_DICTIONARIES_IN_ONE_DATABASE_FILE%2FAll_Dictionaries_report_2016.tab.zip'
-
     import subprocess
     import sys
 
@@ -15,7 +13,7 @@ def dictionaries_to_dataframe():
     import pandas as pd
     import zipfile
 
-    with zipfile.ZipFile('All_Dictionaries_report_2016.tab.zip') as zip:
+    with zipfile.ZipFile('Multi-Dictionaries-2016.zip') as zip:
         zip.extractall()
 
     dicts = open('All_Dictionaries_report_2016.tab', 'r').readlines()

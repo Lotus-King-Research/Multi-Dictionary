@@ -1,59 +1,53 @@
-def dictionaries_to_dataframe():
+import subprocess
+import sys
 
-    import subprocess
-    import sys
+def install(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
-    def install(package):
-        subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+install('pandas')
 
-    install('pandas')
+import pandas as pd
+import zipfile
 
-    import pandas as pd
-    import zipfile
+# extract and open the source data
+with zipfile.ZipFile('Multi-Dictionaries-2016.zip') as zip:
+    zip.extractall()
+dicts = open('Multi-Dictionaries-2016.tab', 'r').readlines()
 
-    # extract and open the source data
-    with zipfile.ZipFile('Multi-Dictionaries-2016.zip') as zip:
-        zip.extractall()
-    dicts = open('Multi-Dictionaries-2016.tab', 'r').readlines()
+# delete the files now that they are no longer needed
+subprocess.run(["rm", "-f", "Multi-Dictionaries-2016.zip"])
+subprocess.run(["rm", "-f", "Multi-Dictionaries-2016.tab"])
 
-    # delete the files now that they are no longer needed
-    subprocess.run(["rm", "-f", "Multi-Dictionaries-2016.zip"])
-    subprocess.run(["rm", "-f", "Multi-Dictionaries-2016.tab"])
-    
-    # read the dictionary in to dataframe
-    l = []
-    for i in dicts:
-        l.append(i.split('\t'))
+# read the dictionary in to dataframe
+l = []
+for i in dicts:
+    l.append(i.split('\t'))
 
-    dict_df = pd.DataFrame(l)
-    dict_df.columns = ['word', 'meaning', 'source']
+df = pd.DataFrame(l)
+df.columns = ['word', 'meaning', 'source']
 
-    # drop rows where both the word and meaning are duplicates
-    dict_df = dict_df.drop_duplicates(['word', 'meaning'])
+# drop rows where both the word and meaning are duplicates
+df = df.drop_duplicates(['word', 'meaning'])
 
-    # remove the newlines from the source field
-    dict_df.source = dict_df.source.str.replace('\n','')
-    
-    # drop entries with cyrillic definition
-    dict_df = dict_df[dict_df.meaning.str.contains(u'[\u0401-\u04f9]') == False]
-    
-    # drop only Russian dictionaries
-    dict_df = dict_df[dict_df.source.str.contains('BB|MWSK') == False]
-    
-    # convert the source field in to categorical
-    dict_df.source = dict_df.source.astype('category')
+# remove the newlines from the source field
+df.source = df.source.str.replace('\n','')
 
-    # remove words where the word contains latin characters (note this might lose something)
-    dict_df = dict_df[dict_df.word.str.contains('[a-z]') == False]
-    dict_df['word'] = dict_df['word'].str.rstrip()
-    
-    dict_df['source'] = dict_df['source'].str.replace('-', '')
-    dict_df['source'] = dict_df['source'].str.replace('[', '')
-    dict_df['source'] = dict_df['source'].str.replace(']', '')
+# drop entries with cyrillic definition
+df = df[df.meaning.str.contains(u'[\u0401-\u04f9]') == False]
 
-    return dict_df
+# drop only Russian dictionaries
+df = df[df.source.str.contains('BB|MWSK') == False]
 
-df = dictionaries_to_dataframe()
+# convert the source field in to categorical
+df.source = df.source.astype('category')
+
+# remove words where the word contains latin characters (note this might lose something)
+df = df[df.word.str.contains('[a-z]') == False]
+df['word'] = df['word'].str.rstrip()
+
+df['source'] = df['source'].str.replace('-', '')
+df['source'] = df['source'].str.replace('[', '')
+df['source'] = df['source'].str.replace(']', '')
 
 sources = ['MV',
            'TD',

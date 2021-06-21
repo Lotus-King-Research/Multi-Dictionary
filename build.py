@@ -99,8 +99,8 @@ for source in sources:
     temp['Tibetan'] = temp['Tibetan'].str.replace(' ', '')
     
     if name == 'TibetanMulti':
-        temp.iloc[:60000].to_csv('data/' + name + '-Part1-Dictionary.csv')
-        temp.iloc[60000:].to_csv('data/' + name + '-Part2-Dictionary.csv')
+        temp.iloc[:50000].to_csv('data/' + name + '-Part1-Dictionary.csv')
+        temp.iloc[50000:].to_csv('data/' + name + '-Part2-Dictionary.csv')
         
     else:
         temp.to_csv('data/' + name + '-Dictionary.csv')

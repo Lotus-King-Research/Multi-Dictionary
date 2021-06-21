@@ -11,11 +11,15 @@ def dictionaries_to_dataframe():
     import pandas as pd
     import zipfile
 
+    # extract and open the source data
     with zipfile.ZipFile('Multi-Dictionaries-2016.zip') as zip:
         zip.extractall()
-
     dicts = open('Multi-Dictionaries-2016.tab', 'r').readlines()
 
+    # delete the files now that they are no longer needed
+    subprocess.run(["rm", "-f", "Multi-Dictionaries-2016.zip"])
+    subprocess.run(["rm", "-f", "Multi-Dictionaries-2016.tab"])
+    
     # read the dictionary in to dataframe
     l = []
     for i in dicts:

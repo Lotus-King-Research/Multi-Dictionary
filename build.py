@@ -113,7 +113,7 @@ for filename in filenames:
     if filename != 'Multi-Dictionaries-2016.zip':
         os.system('cp sources/' + filename + ' data/' + filename)
 
-        names.append(name.split('.')[0])
+        names.append(filename.split('.')[0])
 
 dictionaries_df = pd.DataFrame()
 dictionaries_df['Name'] = [name + '.csv' for name in names]

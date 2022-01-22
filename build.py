@@ -99,7 +99,7 @@ for source in sources:
     temp = temp.drop(['index', 'source'], 1)
     temp.columns = ['Tibetan', 'Description']
     temp['Tibetan'] = temp['Tibetan'].str.replace(' ', '')
-        
+    temp = temp.dropna()
     temp.to_csv('data/' + name + '.csv', index=None, sep='\t')
 
 # Handle custom dictionaries

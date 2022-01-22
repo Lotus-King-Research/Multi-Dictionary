@@ -23,7 +23,7 @@
 
 ## Description
 
-Repository for managing dictionary versions. Will be renamed to `Padma-Dictionary-Data` in the future.
+Repository for managing dictionary versions.
 
 ## Owner
 
@@ -32,8 +32,6 @@ Repository for managing dictionary versions. Will be renamed to `Padma-Dictionar
 ## Integrations
 
 - [Tibetan-Lookup](https://github.com/Lotus-King-Research/Tibetan-Lookup/)
-
-This repository is deployed on commit via [Cloudflare Pages](https://developers.cloudflare.com/pages/platform/github-integration).
 
 ## Docs
 

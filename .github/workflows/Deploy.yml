@@ -1,0 +1,46 @@
+name: Deploy Modified Data
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [closed] 
+
+jobs:
+  deploy:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install Dependencies
+      run: |
+        pip install flake8 pytest pandas
+    - name: Lint with flake8
+      run: |
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Build Data
+      run: |
+        python build.py
+    - name: Make Changes
+      run: |
+        git config --global user.email mailme@mikkokotila.com
+        git config --global user.name "Mikko Kotila"
+        git checkout -b "data_update_through_ci"
+        git add --all
+        git commit -m "data is updated by CI"
+    - name: Push Changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GIT_TOKEN }}
+        branch: data_update_through_ci
+    - name: Create Pull Request
+      uses: vsoch/pull-request-action@1.0.6
+      env:
+        GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        BRANCH_PREFIX: "update_data_"
+        PULL_REQUEST_BRANCH: "master"
+        PULL_REQUEST_FROM_BRANCH: "data_update_through_ci"

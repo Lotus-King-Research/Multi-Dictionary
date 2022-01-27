@@ -1,21 +1,17 @@
 import subprocess
 import sys
 
-def install(package):
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-
-install('pandas')
-
 import pandas as pd
 import zipfile
 
+import warnings
+warnings.simplefilter('ignore')
+
 # extract and open the source data
-with zipfile.ZipFile('Multi-Dictionaries-2016.zip') as zip:
+with zipfile.ZipFile('sources/Multi-Dictionaries-2016.zip') as zip:
     zip.extractall()
 dicts = open('Multi-Dictionaries-2016.tab', 'r').readlines()
 
-# delete the files now that they are no longer needed
-subprocess.run(["rm", "-f", "Multi-Dictionaries-2016.zip"])
 subprocess.run(["rm", "-f", "Multi-Dictionaries-2016.tab"])
 
 # read the dictionary in to dataframe
@@ -62,28 +58,40 @@ sources = ['MV',
 
 out = {}
 
+names = []
+
 for source in sources:
     
     if source == 'MV':
         name = 'Mahavyutpatti'
+        names.append(name)
     if source == 'TD':
-        name = 'TonyDuff'
+        name = 'Tony-Duff'
+        names.append(name)
     if source == 'EP|EP+':
-        name = 'ErikPemaKunsang'
+        name = 'Erik-Pema-Kunsang'
+        names.append(name)
     if source == 'IW|IW+':
-        name = 'IvesWaldo'
+        name = 'Ives-Waldo'
+        names.append(name)
     if source == 'HP|HP |HP+':
-        name = 'JeffreyHopkins'
+        name = 'Jeffrey-Hopkins'
+        names.append(name)
     if source == 'ML|ML+':
-        name = 'LobsangMonlam'
+        name = 'Lobsang-Monlam'
+        names.append(name)
     if source == 'JW|JW+':
-        name = 'JimWelby'
+        name = 'Jim-Welby'
+        names.append(name)
     if source == 'TS|TT|TS+|TT+|DK|MVP':
-        name = 'TibetanMulti'
+        name = 'Tibetan-Multi'
+        names.append(name)
     if source == 'DR|DR+':
-        name = 'TibetanMedicine'
+        name = 'Tibetan-Medicine'
+        names.append(name)
     if source == 'VD':
-        name = 'VerbLexicon'
+        name = 'Verb-Lexicon'
+        names.append(name)
         
     temp = df[df.source.str.contains(source) == True]
     temp = temp.drop_duplicates()
@@ -91,11 +99,25 @@ for source in sources:
     temp = temp.drop(['index', 'source'], 1)
     temp.columns = ['Tibetan', 'Description']
     temp['Tibetan'] = temp['Tibetan'].str.replace(' ', '')
-    
-    if name == 'TibetanMulti':
-        temp.iloc[:40000].to_csv('data/' + name + '-Part1-Dictionary.csv')
-        temp.iloc[40000:80000].to_csv('data/' + name + '-Part2-Dictionary.csv')
-        temp.iloc[80000:].to_csv('data/' + name + '-Part3-Dictionary.csv')
-        
-    else:
-        temp.to_csv('data/' + name + '-Dictionary.csv')
+    temp = temp.dropna()
+    temp.to_csv('data/' + name + '.csv', index=None, sep='\t')
+
+# Handle custom dictionaries
+import os
+
+from os import listdir
+from os.path import isfile, join
+filenames = [f for f in listdir('sources/') if isfile(join('sources/', f))]
+
+for filename in filenames:
+    if filename != 'Multi-Dictionaries-2016.zip':
+        os.system('cp sources/' + filename + ' data/' + filename)
+
+        names.append(filename.split('.')[0])
+
+dictionaries_df = pd.DataFrame()
+dictionaries_df['Name'] = [name + '.csv' for name in names]
+dictionaries_df['Title'] = [name.replace('-', ' ') for name in names]
+dictionaries_df['Label'] = [name.lower().replace('-', '_') for name in names]
+
+dictionaries_df.to_csv('data/dictionaries.csv', index=None)

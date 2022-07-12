@@ -35,4 +35,4 @@ Repository for managing dictionary versions.
 
 ## Docs
 
-None. 
+None.
